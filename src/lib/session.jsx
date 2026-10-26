@@ -1,4 +1,3 @@
-import { envList } from '../env.js';
 import { createContext, useContext, useEffect, useMemo, useState } from 'react';
 import { useBe } from './be-context.jsx';
 import { prefsOf } from './prefs.js';
@@ -13,9 +12,10 @@ import { plainMemories, knowledgeLines, personalLines } from './memory.js';
 import { fetchBadges, profileMe } from './plugins/api.js';
 import { cachedGithub } from './github.js';
 
-// Client-side hint only (decides whether to render admin entry points). The data behind them comes from
-// /api/admin/*, which re-checks the verified email server-side and answers 404 to everyone else.
-export const ADMIN_HINT = envList('VITE_ADMIN_EMAILS'); // cosmetic; the server decides
+// Admin entry points are shown only when the server says so: GET /api/admin/whoami re-checks the verified email
+// against NEST_ADMIN_EMAILS server-side and answers 404 to everyone else. No admin address is shipped in the bundle.
+export const OFFICIAL_ADMIN_EMAIL = 'nest@official.heynest.invalid';
+const ADMIN_CACHE = 'nest.adm.'; // sessionStorage cache of the server's answer per uid (avoids a flicker on reload)
 
 const Ctx = createContext(null);
 
@@ -40,6 +40,29 @@ export function SessionProvider({ children }) {
 
   useEffect(() => be.onAuth((u) => { setUser(u || null); if (!u) { setProfile(null); setFamily(null); } }), []);
   // Run 18: the Firebase user object is mutated in place by reload() (emailVerified) — bump a nonce so gates re-render.
+  // Server-checked admin flag (see OFFICIAL_ADMIN_EMAIL above). Only verified, non-demo, real-backend users ask.
+  const [srvAdmin, setSrvAdmin] = useState(false);
+  useEffect(() => {
+    const uid = user?.uid;
+    if (demo || be.MOCK || !uid || user.emailVerified !== true || !be.getIdToken) { setSrvAdmin(false); return undefined; }
+    let live = true;
+    const key = ADMIN_CACHE + uid;
+    let cached = null;
+    try { cached = sessionStorage.getItem(key); } catch { /* storage blocked */ }
+    setSrvAdmin(cached === '1');
+    if (cached !== null) return undefined;
+    (async () => {
+      try {
+        const token = await be.getIdToken();
+        const r = await fetch('/api/admin/whoami', { headers: { authorization: `Bearer ${token}` } });
+        if (!live) return;
+        const ok = r.ok;
+        setSrvAdmin(ok);
+        if (ok || r.status === 404 || r.status === 401) { try { sessionStorage.setItem(key, ok ? '1' : '0'); } catch { /* ignore */ } }
+      } catch { if (live) setSrvAdmin(false); }
+    })();
+    return () => { live = false; };
+  }, [user?.uid, user?.emailVerified, demo]);
   const [userNonce, setUserNonce] = useState(0);
   useEffect(() => { const f = () => setUserNonce((n) => n + 1); window.addEventListener('nest:user-reloaded', f); return () => window.removeEventListener('nest:user-reloaded', f); }, []);
   // Run 23b: hard reload of /app sometimes stayed on the boot splash (a first snapshot that never arrived).
@@ -150,7 +173,7 @@ export function SessionProvider({ children }) {
     // was refused), everyone else's from their member doc.
     const myPhoto = profile && typeof profile.avatar === 'string' ? avatarSrc(profile.avatar) : avatarSrc(me?.photoURL);
     const photoOf = (uid) => (uid && uid === user?.uid ? myPhoto : avatarSrc(members.find((m) => m.uid === uid)?.photoURL));
-    const isAdmin = !demo && !!user && ((user.emailVerified === true && ADMIN_HINT.includes(String(user.email || '').toLowerCase())) || String(user.email || '').toLowerCase() === 'nest@official.heynest.invalid'
+    const isAdmin = !demo && !!user && ((user.emailVerified === true && srvAdmin) || String(user.email || '').toLowerCase() === OFFICIAL_ADMIN_EMAIL
       || (be.MOCK && typeof localStorage !== 'undefined' && localStorage.getItem('nest.mock.admin') === '1')); // mock screenshots only
     // Usage is shown as percentages only.
     const usage = {
@@ -166,7 +189,7 @@ export function SessionProvider({ children }) {
     const refreshProfile = (p) => { if (p !== undefined) setPubProfile(p); setProfNonce((n) => n + 1); };
     return { status, user, profile, family, members, me, usage, attToday, reminders, memories, plan, basePlan, gift, planEff: eff, planKnown: eff.known, planLabel: (t) => planLabelParts(eff, t), refreshPlan: () => setPlanNonce((n) => n + 1), memberName, myPhoto, photoOf, isAdmin, prefs, savePrefs, isOwner: family?.ownerId === user?.uid,
       isVerified, handleOf, pubProfile, refreshProfile };
-  }, [user, userNonce, profile, family, members, uDay, uWeek, dk, reminders, memories, be, planInfo, demo, badges, pubProfile]);
+  }, [user, userNonce, profile, family, members, uDay, uWeek, dk, reminders, memories, be, planInfo, demo, badges, pubProfile, srvAdmin]);
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
 }
 export const useSession = () => useContext(Ctx);
