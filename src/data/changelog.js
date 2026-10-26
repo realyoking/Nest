@@ -4,6 +4,14 @@
 // zh-Hans is generated from zh-Hant (work/run6/gen-changelog.mjs uses src/lib/hans.js); keep the three languages in step.
 export const CHANGELOG = [
  {
+  "version": "1.25.2",
+  "date": "2026-10-26",
+  "zh-Hant": { "title": "新的聯絡電郵", "items": ["Nest 的聯絡電郵改為 hello@nesty.cyou，網站、常見問題、私隱政策及 App 內「幫助與意見」都已更新。"] },
+  "zh-Hans": { "title": "新的联络电邮", "items": ["Nest 的联络电邮改为 hello@nesty.cyou，网站、常见问题、隐私政策及 App 内「帮助与意见」都已更新。"] },
+  "en": { "title": "New contact address", "items": ["You can now reach Nest at hello@nesty.cyou — the website, FAQ, privacy policy and the in-app Help link all use it."] },
+  "th": { "title": "อีเมลติดต่อใหม่", "items": ["ติดต่อ Nest ได้ที่ hello@nesty.cyou แล้ว เว็บไซต์ คำถามที่พบบ่อย นโยบายความเป็นส่วนตัว และลิงก์ช่วยเหลือในแอปใช้อีเมลนี้ทั้งหมด"] }
+ },
+ {
   "version": "1.25.1",
   "date": "2026-10-24",
   "zh-Hant": { "title": "修正夜間模式下拉選單看不清", "items": ["首頁夜間模式下，語言選單的選項文字現在清楚可見，選單顏色會跟隨日間或夜間主題。", "所有下拉選單、選擇欄及箭頭在深色主題下都改用一致的顏色，對比更清晰。"] },
