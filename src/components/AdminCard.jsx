@@ -1,4 +1,4 @@
-// Compact admin card on Home. Rendered only when the session's admin hint matches (verified email on VITE_ADMIN_EMAILS);
+// Compact admin card on Home. Rendered only when the session's server-checked admin flag is set (GET /api/admin/whoami);
 // its numbers come from GET /api/admin/summary, which re-checks the verified email server-side and 404s anyone else
 // (the card then disappears). Counts only.
 import { useEffect, useState } from 'react';
