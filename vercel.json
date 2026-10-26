@@ -1,0 +1,484 @@
+{
+  "framework": "vite",
+  "buildCommand": "vite build",
+  "outputDirectory": "dist",
+  "redirects": [
+    {
+      "source": "/",
+      "has": [
+        {
+          "type": "host",
+          "value": "status.nesty.cyou"
+        }
+      ],
+      "destination": "/status",
+      "permanent": false
+    },
+    {
+      "source": "/",
+      "has": [
+        {
+          "type": "host",
+          "value": "blog.nesty.cyou"
+        }
+      ],
+      "destination": "/en/",
+      "permanent": false
+    },
+    {
+      "source": "/:slug((?!(?:en|zh-hant|zh-hans|ja|ko|es|fr|de|pt-br|id|vi|th)/?$)[a-z0-9-]+)",
+      "has": [
+        {
+          "type": "host",
+          "value": "blog.nesty.cyou"
+        }
+      ],
+      "destination": "/en/:slug",
+      "statusCode": 301
+    },
+    {
+      "source": "/:path((?!(?:en|zh-hant|zh-hans|ja|ko|es|fr|de|pt-br|id|vi|th)(?:/[a-z0-9-]*)?/?$)(?!favicon|apple-touch-icon|icon-|og|robots\\.txt|sitemap\\.xml|llms\\.txt|blog-media/|assets/|api/|__/|manifest\\.webmanifest|sw\\.js).+)",
+      "has": [
+        {
+          "type": "host",
+          "value": "blog.nesty.cyou"
+        }
+      ],
+      "destination": "https://nesty.cyou/:path",
+      "statusCode": 301
+    },
+    {
+      "source": "/",
+      "has": [
+        {
+          "type": "host",
+          "value": "changelog.nesty.cyou"
+        }
+      ],
+      "destination": "/en/",
+      "permanent": false
+    },
+    {
+      "source": "/:path((?!(?:en|zh-hant|zh-hans|ja|ko|es|fr|de|pt-br|id|vi|th)/?$)(?!favicon|apple-touch-icon|icon-|og|robots\\.txt|sitemap\\.xml|llms\\.txt|blog-media/|assets/|api/|__/|manifest\\.webmanifest|sw\\.js).+)",
+      "has": [
+        {
+          "type": "host",
+          "value": "changelog.nesty.cyou"
+        }
+      ],
+      "destination": "/en/",
+      "statusCode": 301
+    },
+    {
+      "source": "/:path((?!api/|__/|oauth-callback\\.html).*)",
+      "has": [
+        {
+          "type": "host",
+          "value": "heynest.vercel.app"
+        }
+      ],
+      "destination": "https://nesty.cyou/:path",
+      "statusCode": 301
+    },
+    {
+      "source": "/:path((?!api/|__/|oauth-callback\\.html).*)",
+      "has": [
+        {
+          "type": "host",
+          "value": "kabo-family.vercel.app"
+        }
+      ],
+      "destination": "https://nesty.cyou/:path",
+      "statusCode": 301
+    },
+    {
+      "source": "/:path((?!api/|__/|oauth-callback\\.html).*)",
+      "has": [
+        {
+          "type": "host",
+          "value": "nestfam.vercel.app"
+        }
+      ],
+      "destination": "https://nesty.cyou/:path",
+      "statusCode": 301
+    },
+    {
+      "source": "/:path((?!api/|__/|oauth-callback\\.html).*)",
+      "has": [
+        {
+          "type": "host",
+          "value": "nesthk.vercel.app"
+        }
+      ],
+      "destination": "https://nesty.cyou/:path",
+      "statusCode": 301
+    },
+    {
+      "source": "/:path((?!api/|__/|oauth-callback\\.html).*)",
+      "has": [
+        {
+          "type": "host",
+          "value": "nestfamily.vercel.app"
+        }
+      ],
+      "destination": "https://nesty.cyou/:path",
+      "statusCode": 301
+    },
+    {
+      "source": "/:lang(en|zh-hant|zh-hans)/compare/nest-vs-chatgpt-homework",
+      "destination": "https://blog.nesty.cyou/:lang/nest-vs-chatgpt",
+      "statusCode": 301
+    },
+    {
+      "source": "/compare/nest-vs-chatgpt-homework",
+      "destination": "https://blog.nesty.cyou/en/nest-vs-chatgpt",
+      "statusCode": 301
+    },
+    {
+      "source": "/:lang(en|zh-hant|zh-hans)/compare",
+      "destination": "https://blog.nesty.cyou/:lang/",
+      "statusCode": 301
+    },
+    {
+      "source": "/compare",
+      "destination": "https://blog.nesty.cyou/en/",
+      "statusCode": 301
+    },
+    {
+      "source": "/blog",
+      "destination": "https://blog.nesty.cyou/en/",
+      "statusCode": 301
+    },
+    {
+      "source": "/blog/:slug([a-z0-9-]+)",
+      "destination": "https://blog.nesty.cyou/en/:slug",
+      "statusCode": 301
+    },
+    {
+      "source": "/:lang(en|zh-hant|zh-hans|ja|ko|es|fr|de|pt-br|id|vi|th)/blog",
+      "destination": "https://blog.nesty.cyou/:lang/",
+      "statusCode": 301
+    },
+    {
+      "source": "/:lang(en|zh-hant|zh-hans|ja|ko|es|fr|de|pt-br|id|vi|th)/blog/:slug([a-z0-9-]+)",
+      "destination": "https://blog.nesty.cyou/:lang/:slug",
+      "statusCode": 301
+    },
+    {
+      "source": "/:lang(en|zh-hant|zh-hans|ja|ko|es|fr|de|pt-br|id|vi|th)/changelog",
+      "destination": "https://changelog.nesty.cyou/:lang/",
+      "statusCode": 301
+    }
+  ],
+  "rewrites": [
+    {
+      "source": "/:lang(en|zh-hant|zh-hans|ja|ko|es|fr|de|pt-br|id|vi|th)",
+      "has": [
+        {
+          "type": "host",
+          "value": "blog.nesty.cyou"
+        }
+      ],
+      "destination": "/api/ops?op=blog-index&lang=:lang"
+    },
+    {
+      "source": "/:lang(en|zh-hant|zh-hans|ja|ko|es|fr|de|pt-br|id|vi|th)/",
+      "has": [
+        {
+          "type": "host",
+          "value": "blog.nesty.cyou"
+        }
+      ],
+      "destination": "/api/ops?op=blog-index&lang=:lang"
+    },
+    {
+      "source": "/:lang(en|zh-hant|zh-hans|ja|ko|es|fr|de|pt-br|id|vi|th)/:slug([a-z0-9-]+)",
+      "has": [
+        {
+          "type": "host",
+          "value": "blog.nesty.cyou"
+        }
+      ],
+      "destination": "/api/ops?op=blog-post&lang=:lang&slug=:slug"
+    },
+    {
+      "source": "/:lang(en|zh-hant|zh-hans|ja|ko|es|fr|de|pt-br|id|vi|th)",
+      "has": [
+        {
+          "type": "host",
+          "value": "changelog.nesty.cyou"
+        }
+      ],
+      "destination": "/:lang/changelog.html"
+    },
+    {
+      "source": "/:lang(en|zh-hant|zh-hans|ja|ko|es|fr|de|pt-br|id|vi|th)/",
+      "has": [
+        {
+          "type": "host",
+          "value": "changelog.nesty.cyou"
+        }
+      ],
+      "destination": "/:lang/changelog.html"
+    },
+    {
+      "source": "/api/pdata",
+      "destination": "/api/calendar?op=pdata"
+    },
+    {
+      "source": "/api/github/:op",
+      "destination": "/api/ops?op=github-:op"
+    },
+    {
+      "source": "/api/memory/:op",
+      "destination": "/api/ops?op=mem-:op"
+    },
+    {
+      "source": "/api/nest/:op",
+      "destination": "/api/calendar?op=nest-:op"
+    },
+    {
+      "source": "/api/hk/:op",
+      "destination": "/api/push/cron?op=hk-:op"
+    },
+    {
+      "source": "/api/auto/:op",
+      "destination": "/api/push/cron?op=auto-:op"
+    },
+    {
+      "source": "/api/chat-title",
+      "destination": "/api/ops?op=chat-title"
+    },
+    {
+      "source": "/api/plugins/:op",
+      "destination": "/api/ops?op=plug-:op"
+    },
+    {
+      "source": "/api/promo",
+      "destination": "/api/ops?op=promo-status"
+    },
+    {
+      "source": "/api/promo/:op",
+      "destination": "/api/ops?op=promo-:op"
+    },
+    {
+      "source": "/api/app/:op",
+      "destination": "/api/ops?op=app-:op"
+    },
+    {
+      "source": "/api/admin/:op",
+      "destination": "/api/ops?op=admin-:op"
+    },
+    {
+      "source": "/api/apple/:op",
+      "destination": "/api/calendar?op=apple-:op"
+    },
+    {
+      "source": "/api/google/calendar/:op",
+      "destination": "/api/calendar?op=google-:op"
+    },
+    {
+      "source": "/status",
+      "destination": "/status.html"
+    },
+    {
+      "source": "/auth/action",
+      "destination": "/auth/action.html"
+    },
+    {
+      "source": "/privacy",
+      "destination": "/privacy.html"
+    },
+    {
+      "source": "/terms",
+      "destination": "/terms.html"
+    },
+    {
+      "source": "/:lang(en|zh-hant|zh-hans|ja|ko|es|fr|de|pt-br|id|vi|th)/privacy",
+      "destination": "/:lang/privacy.html"
+    },
+    {
+      "source": "/:lang(en|zh-hant|zh-hans|ja|ko|es|fr|de|pt-br|id|vi|th)/terms",
+      "destination": "/:lang/terms.html"
+    },
+    {
+      "source": "/beta",
+      "destination": "/beta/index.html"
+    },
+    {
+      "source": "/:lang(en|zh-hant|zh-hans|ja|ko|es|fr|de|pt-br|id|vi|th)",
+      "destination": "/:lang/home.html"
+    },
+    {
+      "source": "/:lang(en|zh-hant|zh-hans|ja|ko|es|fr|de|pt-br|id|vi|th)/",
+      "destination": "/:lang/home.html"
+    },
+    {
+      "source": "/:lang(en|zh-hant|zh-hans|ja|ko|es|fr|de|pt-br|id|vi|th)/features",
+      "destination": "/:lang/features.html"
+    },
+    {
+      "source": "/:lang(en|zh-hant|zh-hans|ja|ko|es|fr|de|pt-br|id|vi|th)/pricing",
+      "destination": "/:lang/pricing.html"
+    },
+    {
+      "source": "/:lang(en|zh-hant|zh-hans|ja|ko|es|fr|de|pt-br|id|vi|th)/faq",
+      "destination": "/:lang/faq.html"
+    },
+    {
+      "source": "/:lang(en|zh-hant|zh-hans|ja|ko|es|fr|de|pt-br|id|vi|th)/plugins",
+      "destination": "/:lang/plugins.html"
+    },
+    {
+      "source": "/blog-media/:id([a-z0-9]+)",
+      "destination": "/api/ops?op=blog-media&id=:id"
+    },
+    {
+      "source": "/sitemap.xml",
+      "destination": "/api/ops?op=blog-sitemap"
+    },
+    {
+      "source": "/llms.txt",
+      "destination": "/api/ops?op=blog-llms"
+    },
+    {
+      "source": "/__/auth/:path*",
+      "destination": "https://kabo-family.firebaseapp.com/__/auth/:path*"
+    },
+    {
+      "source": "/__/firebase/:path*",
+      "destination": "https://kabo-family.firebaseapp.com/__/firebase/:path*"
+    },
+    {
+      "source": "/((?!api/|assets/|logos/|plugins/|og|favicon|sw\\.js|manifest\\.webmanifest|oauth-callback\\.html|__/).*)",
+      "destination": "/spa.html"
+    }
+  ],
+  "headers": [
+    {
+      "source": "/assets/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=31536000, immutable"
+        }
+      ]
+    },
+    {
+      "source": "/sw.js",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "no-cache"
+        },
+        {
+          "key": "Service-Worker-Allowed",
+          "value": "/"
+        },
+        {
+          "key": "Content-Type",
+          "value": "application/javascript; charset=utf-8"
+        }
+      ]
+    },
+    {
+      "source": "/manifest.webmanifest",
+      "headers": [
+        {
+          "key": "Content-Type",
+          "value": "application/manifest+json"
+        },
+        {
+          "key": "Cache-Control",
+          "value": "no-cache"
+        }
+      ]
+    },
+    {
+      "source": "/oauth-callback.html",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "no-store"
+        },
+        {
+          "key": "Referrer-Policy",
+          "value": "no-referrer"
+        }
+      ]
+    },
+    {
+      "source": "/spa.html",
+      "headers": [
+        {
+          "key": "X-Robots-Tag",
+          "value": "noindex"
+        }
+      ]
+    },
+    {
+      "source": "/(llms-full.txt|robots.txt)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=0, must-revalidate"
+        }
+      ]
+    },
+    {
+      "source": "/auth/action(.*)",
+      "headers": [
+        {
+          "key": "X-Robots-Tag",
+          "value": "noindex, nofollow"
+        },
+        {
+          "key": "Referrer-Policy",
+          "value": "no-referrer"
+        },
+        {
+          "key": "Cache-Control",
+          "value": "no-store"
+        }
+      ]
+    },
+    {
+      "source": "/status(.*)",
+      "headers": [
+        {
+          "key": "X-Robots-Tag",
+          "value": "noindex"
+        },
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=0, must-revalidate"
+        }
+      ]
+    },
+    {
+      "source": "/(.*)",
+      "has": [
+        {
+          "type": "host",
+          "value": "status.nesty.cyou"
+        }
+      ],
+      "headers": [
+        {
+          "key": "X-Robots-Tag",
+          "value": "noindex"
+        }
+      ]
+    }
+  ],
+  "crons": [
+    {
+      "path": "/api/push/cron?slot=morning",
+      "schedule": "0 23 * * *"
+    },
+    {
+      "path": "/api/push/cron?slot=evening",
+      "schedule": "0 11 * * *"
+    }
+  ]
+}
