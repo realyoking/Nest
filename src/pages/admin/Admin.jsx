@@ -1,4 +1,3 @@
-import { envList } from '../../env.js';
 // /admin — Nest admin panel (English + 繁中, follows the app language; strings under `adm.*` in src/lib/strings.js). Access is enforced by the server: every /api/admin/* call verifies the
 // Firebase ID token + verified email on the allowlist and answers 404 to anyone else. The client check below is
 // cosmetic (it only decides whether to even try). Counts only: no chat, memory or email contents are ever loaded.
@@ -17,7 +16,6 @@ import { ConfigTab, CodesTab, ModTab } from './AdminConfig.jsx';
 import { post as apost } from './adminApi.js';
 import { VerifiedTick } from '../../components/PluginUI.jsx';
 
-const ADMIN_HINT = [...envList('VITE_ADMIN_EMAILS'), 'nest@official.heynest.invalid']; // cosmetic; the server decides (isAdminClaims)
 let LOC = 'en-HK';
 let TT = (k) => k;
 const fmt = (ms, time) => (ms ? new Intl.DateTimeFormat(LOC, { timeZone: 'Asia/Hong_Kong', day: 'numeric', month: 'short', year: 'numeric', ...(time ? { hour: '2-digit', minute: '2-digit', hour12: false } : {}) }).format(new Date(ms)) : '—');
