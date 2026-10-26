@@ -11,7 +11,6 @@ const DEFAULTS = {
   VITE_FIREBASE_APP_ID: '1:000000000000:web:0000000000000000',
   VITE_GOOGLE_CLIENT_ID: 'test-client-id.apps.googleusercontent.com',
   VITE_CONTACT_EMAIL: 'hello@nest.example',
-  VITE_ADMIN_EMAILS: 'admin@nest.example',
   NEST_ADMIN_EMAILS: 'admin@nest.example',
   NEST_OFFICIAL_UID: 'officialUid0000000000000001',
   NEST_TEST_FAMILY_ID: 'testFamily000000001',
