@@ -56,7 +56,7 @@ Environment Variables (Production and Preview). Every variable is documented in 
 | `VITE_SITE_URL` | Your public URL, e.g. `https://nest.example.com` (canonical links, emails, OAuth return URLs) |
 | `FIREBASE_PROJECT_ID`, `FIREBASE_SERVICE_ACCOUNT` | Server access to Firestore / Auth |
 | `AGNES_API_KEY` (and optionally `ORCAROUTER_API_KEY`, `GEMINI_API_KEY`, `MISTRAL_API_KEY`) | AI providers |
-| `VITE_CONTACT_EMAIL`, `VITE_ADMIN_EMAILS` / `NEST_ADMIN_EMAILS` | Public contact address, admin allow-list |
+| `VITE_CONTACT_EMAIL`, `NEST_ADMIN_EMAILS` | Public contact address; admin allow-list (server only) |
 | `TOKEN_ENC_KEY`, `NEST_LEDGER_SECRET`, `CRON_SECRET` | Server secrets (long random strings; `TOKEN_ENC_KEY` is 32 bytes base64) |
 
 `VITE_*` values are compiled into the public JavaScript bundle and the static pages, so only put public identifiers
