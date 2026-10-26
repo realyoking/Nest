@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Nest 巢</title>
+<meta name="robots" content="noindex"><style>body{margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;font:600 16px -apple-system,system-ui,sans-serif;color:#333;background:#fff;text-align:center;padding:24px;box-sizing:border-box}
+#box{max-width:360px}h1{font-size:22px;margin:0 0 8px}p{margin:6px 0;color:#666;line-height:1.5}a.btn{display:inline-block;margin-top:18px;padding:12px 22px;border-radius:999px;background:#111;color:#fff;text-decoration:none;font-weight:700}
+.err h1{color:#c62828}small{display:block;margin-top:10px;color:#999;word-break:break-word}
+@media (prefers-color-scheme:dark){body{background:#0b0b0b;color:#eee}p{color:#aaa}a.btn{background:#fff;color:#111}}</style></head>
+<body><div id="box"><p>正在返回 Nest… · Returning to Nest…</p></div>
+<script>
+// Google OAuth (connectors) lands here with the result in the URL fragment.
+// nest=3&saved=1: the server already saved the account to the user's profile, so this page only has to tell any open
+// Nest window (popup opener / BroadcastChannel / localStorage) and get the user back. It never needs app storage.
+(function () {
+  var hash = location.hash || ('#' + location.search.replace(/^\?/, ''));
+  try { history.replaceState(null, '', location.pathname); } catch (e) {}
+  var h = new URLSearchParams(hash.replace(/^#/, ''));
+  var saved = h.get('saved') === '1';
+  var msg = { type: 'nest-oauth', hash: hash };
+  var acked = false;
+  var bc = null;
+  try { bc = new BroadcastChannel('nest-oauth'); bc.onmessage = function (e) { if (e.data && e.data.type === 'nest-oauth-ack') acked = true; }; bc.postMessage(msg); } catch (e) {}
+  if (window.opener && !window.opener.closed) {
+    try { window.opener.postMessage(msg, location.origin); acked = true; } catch (e) {}
+  }
+  var ret = '/app/connections', pending = null;
+  try {
+    pending = JSON.parse(localStorage.getItem('nest.oauth.pending') || 'null');
+    if (pending && typeof pending.ret === 'string' && pending.ret.charAt(0) === '/' && pending.ret.charAt(1) !== '/') ret = pending.ret;
+    localStorage.setItem('nest.oauth.result', hash);
+  } catch (e) {}
+  function show(ok) {
+    var box = document.getElementById('box');
+    var email = h.get('email') || '';
+    if (ok) box.innerHTML = '<h1>✓ 已連接</h1><p>' + email.replace(/</g, '') + '</p><p>可以返回 Nest 了。如果此畫面沒有自動關閉，請按左上角「完成」或下面的按鈕。</p><p style="font-size:13px">Connected. You can go back to Nest.</p><a class="btn" href="' + ret + '">返回 Nest · Back to Nest</a>';
+    else { box.className = 'err'; box.innerHTML = '<h1>未能連接</h1><p>請返回 Nest 再試一次。</p><small>' + (h.get('error') || '') + (h.get('detail') ? ' — ' + h.get('detail') : '') + '</small><a class="btn" href="' + ret + '">返回 Nest · Back to Nest</a>'; }
+  }
+  setTimeout(function () {
+    // A Nest window got the message (desktop popup): close this one.
+    if (acked) { try { window.close(); } catch (e) {} setTimeout(function () { show(saved || !h.get('error')); }, 250); return; }
+    // Same browser storage as the app (normal Safari tab / installed app that came back to itself): go back in.
+    if (pending) { location.replace(ret); return; }
+    // Different context (e.g. iOS home-screen app → Safari sheet): the account is already saved server-side.
+    show(saved || (!h.get('error') && h.get('nest')));
+  }, 350);
+})();
+</script></body></html>
