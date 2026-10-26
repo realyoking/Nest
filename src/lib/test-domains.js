@@ -7,5 +7,6 @@ const esc = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 // Regex source matching any of the test domains (no anchors), e.g. "a\.test|b\.test".
 export const TEST_DOMAIN_SRC = TEST_EMAIL_DOMAINS.map(esc).join('|');
 export const isTestDomainEmail = (e) => new RegExp(`@(${TEST_DOMAIN_SRC})$`, 'i').test(String(e || '').trim());
-// Admin allowlist (cosmetic on the client; the server checks NEST_ADMIN_EMAILS / VITE_ADMIN_EMAILS itself).
-export const adminEmails = () => envList('NEST_ADMIN_EMAILS').length ? envList('NEST_ADMIN_EMAILS') : envList('VITE_ADMIN_EMAILS');
+// Admin allowlist — server only (NEST_ADMIN_EMAILS). Never put admin addresses in a VITE_* variable: Vite inlines
+// every VITE_* value into the public bundle. The client learns admin status from GET /api/admin/whoami.
+export const adminEmails = () => envList('NEST_ADMIN_EMAILS');
