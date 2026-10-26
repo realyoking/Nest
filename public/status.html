@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Nest Status</title>
+<meta name="description" content="Live status of Nest (__NEST_SITE_HOST__): website, app, AI, sign-in, push notifications and Google connections." />
+<meta name="robots" content="noindex, follow" />
+<meta name="theme-color" content="#ffffff" />
+<link rel="icon" href="/favicon.svg?v=4" type="image/svg+xml" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800;900&display=swap" rel="stylesheet" />
+<!-- Run 16 — status.__NEST_SITE_HOST__ (vercel.json host redirect → /status → this file). Client-side only: polls the existing
+     booleans-only health endpoints every 60 s while the tab is visible. No AI completions (status-ai only lists models,
+     CDN-cached 60 s). -->
+<style>
+:root{--ink:#0a0a0a;--ink2:#3a3a3a;--muted:#767676;--line:#e6e6e6;--soft:#f5f5f5;--bg:#fff;color-scheme:light}
+*{box-sizing:border-box}html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 Nunito,'PingFang HK','Noto Sans TC','Microsoft JhengHei',-apple-system,BlinkMacSystemFont,sans-serif;-webkit-font-smoothing:antialiased}
+.w{max-width:720px;margin:0 auto;padding:0 20px}
+header{display:flex;justify-content:space-between;align-items:center;padding:18px 0}
+.brand{font-weight:900;font-size:23px;letter-spacing:-.045em;color:var(--ink);text-decoration:none;display:inline-flex;align-items:center;gap:8px}
+.brand img{display:block;border-radius:7px}.brand span{font-weight:700;color:var(--muted);letter-spacing:0;font-size:16px}
+select{font:inherit;font-size:14px;font-weight:700;border:1px solid var(--line);border-radius:999px;padding:6px 12px;background:#fff;color:var(--ink)}
+.hero{border:1px solid var(--line);border-radius:24px;padding:26px 24px;margin-top:18px;display:flex;gap:16px;align-items:center}
+.hero.ok{background:var(--ink);color:#fff;border-color:var(--ink)}
+.hero h1{margin:0;font-size:clamp(22px,4.5vw,30px);line-height:1.2;font-weight:900;letter-spacing:-.02em}
+.hero p{margin:4px 0 0;font-size:14px;opacity:.75}
+.dot{flex:none;width:18px;height:18px;border-radius:50%;border:3px solid currentColor}
+.dot.ok{background:currentColor}.dot.wait{border-style:dashed}
+.hero.ok .dot{border-color:#fff;background:#fff}
+ul{list-style:none;padding:0;margin:22px 0 0;border:1px solid var(--line);border-radius:20px;overflow:hidden}
+li{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:16px 20px;border-top:1px solid var(--line)}
+li:first-child{border-top:0}
+.name{font-weight:800}.sub{display:block;font-size:13px;color:var(--muted);font-weight:600}
+.st{display:inline-flex;align-items:center;gap:8px;font-weight:800;font-size:14px;white-space:nowrap}
+.st .dot{width:12px;height:12px;border-width:2px}
+.st.bad{background:var(--ink);color:#fff;border-radius:999px;padding:4px 12px}
+.meta{display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;margin:14px 2px 0;font-size:13px;color:var(--muted);font-weight:700}
+button.re{font:inherit;font-weight:800;font-size:13px;border:1px solid var(--line);background:#fff;border-radius:999px;padding:4px 12px;cursor:pointer;color:var(--ink)}
+.note{font-size:13px;color:var(--muted);margin:22px 2px 0}
+footer{padding:30px 0 40px;font-size:13px;color:var(--muted)}footer a{color:var(--muted);margin-right:14px}
+</style>
+</head>
+<body>
+<div class="w">
+<header><a class="brand" href="__NEST_SITE_URL__/"><img src="/favicon.svg?v=4" width="24" height="24" alt="" />Nest <span data-t="status">Status</span></a>
+<select id="lang" aria-label="Language"><option value="en">English</option><option value="zh-Hant">繁體中文</option><option value="zh-Hans">简体中文</option></select></header>
+<section class="hero" id="hero" aria-live="polite"><span class="dot wait" aria-hidden="true"></span><div><h1 id="overall"></h1><p id="overallSub"></p></div></section>
+<ul id="list"></ul>
+<div class="meta"><span id="checked"></span><button class="re" id="re" type="button" data-t="refresh"></button></div>
+<p class="note" data-t="note"></p>
+<footer><a href="__NEST_SITE_URL__/" data-t="site"></a><a href="__NEST_SITE_URL__/en/changelog" id="cl" data-t="changelog"></a><a href="mailto:__NEST_CONTACT_EMAIL__" data-t="contact"></a></footer>
+</div>
+<script>
+(function () {
+  'use strict';
+  var T = {
+    en: { status: 'Status', checking: 'Checking…', allOk: 'All systems operational', someBad: 'Some systems are degraded', allBad: 'Major outage',
+      okSub: 'Everything is running normally.', badSub: 'We’re looking into it. Other parts of Nest keep working.', operational: 'Operational', degraded: 'Degraded', pending: 'Checking',
+      checked: 'Last checked', never: 'Not checked yet', refresh: 'Check now', note: 'This page refreshes every 2 minutes while it is open and visible.', site: '__NEST_SITE_HOST__', changelog: 'Changelog', contact: 'Contact',
+      website: 'Website', websiteS: '__NEST_SITE_HOST__ pages', app: 'App', appS: 'Nest web app and database', ai: 'AI', aiS: 'Chat, homework help and quizzes', signin: 'Sign-in', signinS: 'Email and Google sign-in',
+      push: 'Push notifications', pushS: 'Reminders and daily brief', google: 'Google connections', googleS: 'Gmail, Calendar, Classroom, Drive' },
+    'zh-Hant': { status: '服務狀態', checking: '正在檢查…', allOk: '所有系統運作正常', someBad: '部分系統表現欠佳', allBad: '嚴重故障',
+      okSub: '一切運作正常。', badSub: '我們正在跟進，Nest 其他部分仍可正常使用。', operational: '運作正常', degraded: '表現欠佳', pending: '檢查中',
+      checked: '最後檢查', never: '尚未檢查', refresh: '立即檢查', note: '此頁開啟並顯示期間，每 2 分鐘更新一次。', site: '__NEST_SITE_HOST__', changelog: '更新日誌', contact: '聯絡我們',
+      website: '網站', websiteS: '__NEST_SITE_HOST__ 網頁', app: '應用程式', appS: 'Nest 網頁應用程式及資料庫', ai: 'AI', aiS: '對話、功課輔導及測驗', signin: '登入', signinS: '電郵及 Google 登入',
+      push: '推送通知', pushS: '提醒及每日簡報', google: 'Google 連接', googleS: 'Gmail、日曆、Classroom、雲端硬碟' },
+    'zh-Hans': { status: '服务状态', checking: '正在检查…', allOk: '所有系统运行正常', someBad: '部分系统性能下降', allBad: '严重故障',
+      okSub: '一切运行正常。', badSub: '我们正在跟进，Nest 其他部分仍可正常使用。', operational: '运行正常', degraded: '性能下降', pending: '检查中',
+      checked: '最后检查', never: '尚未检查', refresh: '立即检查', note: '此页面打开并显示期间，每 2 分钟更新一次。', site: '__NEST_SITE_HOST__', changelog: '更新日志', contact: '联系我们',
+      website: '网站', websiteS: '__NEST_SITE_HOST__ 网页', app: '应用', appS: 'Nest 网页应用及数据库', ai: 'AI', aiS: '对话、作业辅导及测验', signin: '登录', signinS: '邮箱及 Google 登录',
+      push: '推送通知', pushS: '提醒及每日简报', google: 'Google 连接', googleS: 'Gmail、日历、Classroom、云端硬盘' }
+  };
+  var seg = { en: 'en', 'zh-Hant': 'zh-hant', 'zh-Hans': 'zh-hans' };
+  function pick() {
+    var c = [new URLSearchParams(location.search).get('lang')];
+    try { c.push(localStorage.getItem('nest.lang')); } catch (e) {}
+    c = c.concat(navigator.languages || [navigator.language]);
+    for (var i = 0; i < c.length; i++) { var l = String(c[i] || '').toLowerCase(); if (!l) continue; if (/^zh-(hans|cn|sg|my)/.test(l)) return 'zh-Hans'; if (/^zh/.test(l)) return 'zh-Hant'; if (/^en/.test(l) || i < 2) return 'en'; }
+    return 'en';
+  }
+  var lang = pick();
+  function t(k) { return T[lang][k] || T.en[k] || k; }
+  var KEY = '__NEST_FIREBASE_API_KEY__'; // public Firebase web key, injected at build time (vite.config.js nestPublicConfig)
+  function get(url, opt) {
+    var ctl = window.AbortController ? new AbortController() : null; var tm = ctl && setTimeout(function () { ctl.abort(); }, 10000);
+    return fetch(url, Object.assign({ cache: 'no-store', signal: ctl && ctl.signal }, opt || {})).then(function (r) { clearTimeout(tm); return r; }, function (e) { clearTimeout(tm); throw e; });
+  }
+  function j(url) { return get(url).then(function (r) { return r.json().catch(function () { return {}; }).then(function (b) { return { ok: r.ok, b: b || {} }; }); }); }
+  var bust = function () { return 't=' + Math.floor(Date.now() / 30000); };
+  // Run 19: ONE CDN-shared server call (/api/ops?op=status-all, cached 60 s at the edge for every visitor) answers
+  // app / ai / push / google. Same URL every time (no cache-buster) so the CDN can serve it. Website + sign-in probes
+  // below hit static files / Google directly and cost no Nest function invocations.
+  var ALL = '/api/ops?op=status-all', all = null;
+  function server() { return all || (all = get(ALL, { cache: 'default' }).then(function (r) { return r.ok ? r.json() : {}; }).catch(function () { return {}; })); }
+  function from(k) { return function () { return server().then(function (b) { return b && b[k] === true; }); }; }
+  var CHECKS = [
+    { id: 'website', run: function () { return get('/en/?' + bust(), { method: 'HEAD' }).then(function (r) { return r.ok; }); } },
+    { id: 'app', run: from('app') },
+    { id: 'ai', run: from('ai') },
+    { id: 'signin', run: function () {
+      return Promise.all([
+        get('/__/auth/handler', { method: 'HEAD' }).then(function (r) { return r.ok; }),
+        get('https://identitytoolkit.googleapis.com/v1/accounts:createAuthUri?key=' + KEY, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ identifier: 'status-check@example.com', continueUri: '__NEST_SITE_URL__/' }) }).then(function (r) { return r.ok; })
+      ]).then(function (a) { return a[0] && a[1]; }); } },
+    { id: 'push', run: from('push') },
+    { id: 'google', run: from('google') }
+  ];
+  var res = {}, last = null, busy = false;
+  function render() {
+    document.documentElement.lang = lang; document.getElementById('lang').value = lang;
+    document.title = 'Nest ' + t('status');
+    var n = document.querySelectorAll('[data-t]'); for (var i = 0; i < n.length; i++) n[i].textContent = t(n[i].getAttribute('data-t'));
+    document.getElementById('cl').href = '__NEST_CHANGELOG_URL__/' + seg[lang] + '/';
+    var html = '', bad = 0, done = 0;
+    CHECKS.forEach(function (c) {
+      var s = res[c.id]; if (s === true || s === false) done++; if (s === false) bad++;
+      var cls = s === true ? 'ok' : s === false ? 'bad' : 'wait';
+      html += '<li data-check="' + c.id + '" data-state="' + (s === true ? 'operational' : s === false ? 'degraded' : 'pending') + '"><span><span class="name">' + t(c.id) + '</span><span class="sub">' + t(c.id + 'S') + '</span></span>' +
+        '<span class="st ' + cls + '"><span class="dot ' + (s === true ? 'ok' : s === false ? '' : 'wait') + '" aria-hidden="true"></span>' + (s === true ? t('operational') : s === false ? t('degraded') : t('pending')) + '</span></li>';
+    });
+    document.getElementById('list').innerHTML = html;
+    var hero = document.getElementById('hero'), all = done === CHECKS.length;
+    hero.className = 'hero' + (all && !bad ? ' ok' : '');
+    hero.querySelector('.dot').className = 'dot' + (all ? (bad ? '' : ' ok') : ' wait');
+    document.getElementById('overall').textContent = !all ? t('checking') : !bad ? t('allOk') : bad === CHECKS.length ? t('allBad') : t('someBad');
+    document.getElementById('overallSub').textContent = !all ? '' : bad ? t('badSub') : t('okSub');
+    hero.setAttribute('data-overall', !all ? 'pending' : bad ? 'degraded' : 'operational');
+    document.getElementById('checked').textContent = t('checked') + ': ' + (last ? last.toLocaleString(lang === 'en' ? 'en-HK' : lang === 'zh-Hans' ? 'zh-CN' : 'zh-HK', { dateStyle: 'medium', timeStyle: 'medium' }) : t('never'));
+  }
+  function runAll() {
+    if (busy) return; busy = true;
+    all = null;
+    var ps = CHECKS.map(function (c) { return c.run().then(function (ok) { res[c.id] = !!ok; }, function () { res[c.id] = false; }).then(render); });
+    Promise.all(ps).then(function () { last = new Date(); busy = false; render(); });
+  }
+  document.getElementById('lang').onchange = function () { lang = this.value; try { localStorage.setItem('nest.lang', lang); } catch (e) {} render(); };
+  document.getElementById('re').onclick = runAll;
+  render(); runAll();
+  // Poll every 2 min only while visible; hidden tabs stop the timer, coming back refreshes once and restarts it.
+  var EVERY = 120000, timer = null;
+  function start() { stop(); timer = setInterval(function () { if (!document.hidden) runAll(); }, EVERY); }
+  function stop() { if (timer) { clearInterval(timer); timer = null; } }
+  document.addEventListener('visibilitychange', function () { if (document.hidden) stop(); else { runAll(); start(); } });
+  if (!document.hidden) start();
+})();
+</script>
+</body>
+</html>
