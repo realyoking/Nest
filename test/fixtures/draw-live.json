@@ -1,0 +1,26 @@
+{
+ "canDraw": {
+  "q": "你識唔識畫圖？",
+  "expectVisual": false,
+  "text": "識呀，我可以直接在度畫圖，例如簡單示意圖、坐標系配點、幾何圖形、數學函數圖、物理光學圖（反光、折射、鏡片）、電路圖、統計圖表（條形圖、折線圖、餅圖）、時間線、比較表、分步解説、flashcard 和 quiz 都可以。\n\n不過照片同寫實插圖暫時做不到，只能畫示意圖同數據圖。\n\n你想我畫些甚麼？",
+  "note": "agnes-3.0-flash via live /api/chat 2026-10-19 ~09:2x HKT, Run 8 NEST_UI_RULE as app note"
+ },
+ "refraction": {
+  "q": "畫一個光的折射圖",
+  "expectVisual": true,
+  "text": "以下是光的折射圖：\n\n```nest-ui\n{\"type\":\"refraction\",\"n1\":1,\"n2\":1.5,\"angle\":40,\"media\":[\"空氣\",\"玻璃\"],\"reflected\":true,\"labels\":{\"incident\":\"入射光線\",\"refracted\":\"折射光線\",\"reflected\":\"反射光線\",\"normal\":\"法線\"}}\n```\n\n圖中顯示光線由空氣進入玻璃時的折射情況。入射角為 40°，折射角可根據斯涅爾定律計算：$n_1 \\sin\\theta_1 = n_2 \\sin\\theta_2$，代入 $n_1 = 1$、$n_2 = 1.5$ 可得折射角約為 25.4°。圖中也包含了法線和反射光線，方便比較入射、折射及反射三者的關係。",
+  "note": "agnes-3.0-flash via live /api/chat 2026-10-19 ~09:2x HKT, Run 8 NEST_UI_RULE as app note"
+ },
+ "tir": {
+  "q": "畫一個全反射的圖，光由玻璃射向空氣，入射角 50°",
+  "expectVisual": true,
+  "text": "早晨！全反射圖已經幫你畫好了，光由玻璃射向空氣，入射角 50°。\n\n玻璃的臨界角約為 41.8°，入射角 50° 已經超過臨界角，所以光線不會折射進入空氣，而是全部反射回玻璃，形成全反射。\n\n```nest-ui\n{\"type\":\"diagram\",\"title\":\"全反射示意圖\",\"items\":[{\"type\":\"refraction\",\"n1\":1.5,\"n2\":1,\"angle\":50,\"media\":[\"玻璃\",\"空氣\"],\"reflected\":true,\"labels\":{\"incident\":\"入射光線\",\"refracted\":\"全反射\",\"reflected\":\"反射光線\",\"normal\":\"法線\"}}]}\n```",
+  "note": "agnes-3.0-flash via live /api/chat 2026-10-19 ~09:2x HKT, Run 8 NEST_UI_RULE as app note"
+ },
+ "cat": {
+  "q": "畫一隻貓",
+  "expectVisual": true,
+  "text": "好的，以下是一隻簡單的貓：\n\n```nest-svg\n<svg viewBox=\"0 0 400 300\" xmlns=\"http://www.w3.org/2000/svg\">\n  <g stroke=\"#333\" stroke-width=\"3\" fill=\"none\">\n    <circle cx=\"200\" cy=\"180\" r=\"55\"/>\n    <polygon points=\"145,140 135,70 175,125\"/>\n    <polygon points=\"255,140 265,70 225,125\"/>\n    <path d=\"M 200 235 Q 310 250 300 200 Q 320 215 330 230\"/>\n    <line x1=\"160\" y1=\"185\" x2=\"135\" y2=\"180\"/>\n    <line x1=\"160\" y1=\"195\" x2=\"138\" y2=\"200\"/>\n    <line x1=\"240\" y1=\"185\" x2=\"265\" y2=\"180\"/>\n    <line x1=\"240\" y1=\"195\" x2=\"262\" y2=\"200\"/>\n  </g>\n  <g fill=\"#333\">\n    <circle cx=\"180\" cy=\"168\" r=\"5\"/>\n    <circle cx=\"220\" cy=\"168\" r=\"5\"/>\n    <ellipse cx=\"200\" cy=\"188\" rx=\"6\" ry=\"4\"/>\n  </g>\n</svg>\n```\n\n貓貓坐著，兩隻耳朵豎起，尾巴向右側甩出，旁邊配上簡單的鬍鬚。如果你想再畫一隻站立的、貓頭鷹，或者其他動物的話，告訴我一聲，我也可以幫你畫。",
+  "note": "agnes-3.0-flash via live /api/chat 2026-10-19 ~09:2x HKT, Run 8 NEST_UI_RULE as app note"
+ }
+}
