@@ -1,0 +1,237 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="robots" content="noindex, nofollow" />
+<meta name="referrer" content="no-referrer" />
+<meta name="theme-color" content="#ffffff" />
+<title>Nest</title>
+<link rel="icon" href="/favicon.svg?v=4" type="image/svg+xml" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800;900&display=swap" rel="stylesheet" />
+<!-- Run 16 — Firebase Auth custom email action handler (Firebase console → Authentication → Templates → action URL
+     __NEST_SITE_URL__/auth/action). Handles mode=resetPassword | verifyEmail | recoverEmail | verifyAndChangeEmail with
+     the Identity Toolkit REST API (same calls the Firebase SDK makes: checkActionCode = accounts:resetPassword {oobCode},
+     confirmPasswordReset = accounts:resetPassword {oobCode,newPassword}, applyActionCode = accounts:update {oobCode}).
+     No SDK, no tracking, noindex, no-referrer (the oobCode is in the URL). -->
+<style>
+:root{--ink:#0a0a0a;--ink2:#3a3a3a;--muted:#767676;--line:#e6e6e6;--soft:#f5f5f5;--bg:#fff;color-scheme:light}
+*{box-sizing:border-box}html{-webkit-text-size-adjust:100%}
+body{margin:0;min-height:100vh;min-height:100dvh;background:var(--bg);color:var(--ink);font:16px/1.6 Nunito,'PingFang HK','Noto Sans TC','Microsoft JhengHei',-apple-system,BlinkMacSystemFont,sans-serif;-webkit-font-smoothing:antialiased;display:flex;flex-direction:column}
+header{display:flex;justify-content:space-between;align-items:center;padding:18px 22px;max-width:560px;width:100%;margin:0 auto}
+.brand{font-weight:900;font-size:23px;letter-spacing:-.045em;color:var(--ink);text-decoration:none;display:inline-flex;align-items:center;gap:8px}
+.brand img{display:block;border-radius:7px}
+select{font:inherit;font-size:14px;font-weight:700;border:1px solid var(--line);border-radius:999px;padding:6px 12px;background:#fff;color:var(--ink)}
+main{flex:1;display:flex;align-items:flex-start;justify-content:center;padding:6vh 20px 40px}
+.card{width:100%;max-width:440px;border:1px solid var(--line);border-radius:24px;padding:30px 26px;background:#fff}
+h1{font-size:26px;line-height:1.2;font-weight:900;letter-spacing:-.02em;margin:0 0 8px}
+p{margin:8px 0;color:var(--ink2)}.muted{color:var(--muted);font-size:14px}
+.icon{width:48px;height:48px;border-radius:999px;border:2px solid var(--ink);display:flex;align-items:center;justify-content:center;font-weight:900;font-size:22px;margin-bottom:16px}
+.icon.solid{background:var(--ink);color:#fff}
+label{display:block;font-weight:800;font-size:14px;margin:16px 0 6px}
+.pw{position:relative}
+input{width:100%;font:inherit;font-size:16px;padding:13px 14px;border:1.5px solid var(--line);border-radius:14px;outline:none;background:#fff;color:var(--ink)}
+input:focus{border-color:var(--ink)}
+.pw input{padding-right:70px}
+.show{position:absolute;right:8px;top:50%;transform:translateY(-50%);border:0;background:none;font:inherit;font-size:13px;font-weight:800;color:var(--muted);cursor:pointer;padding:6px 8px}
+.btn{display:flex;align-items:center;justify-content:center;width:100%;min-height:48px;margin-top:20px;border:0;border-radius:999px;background:var(--ink);color:#fff;font:inherit;font-weight:800;font-size:16px;cursor:pointer;text-decoration:none}
+.btn.ghost{background:#fff;color:var(--ink);border:1.5px solid var(--ink);margin-top:10px}
+.btn[disabled]{opacity:.45;cursor:default}
+.err{color:var(--ink);background:var(--soft);border-left:3px solid var(--ink);padding:10px 12px;border-radius:8px;font-size:14px;font-weight:700;margin-top:14px}
+.email{font-weight:800;color:var(--ink);word-break:break-all}
+.spin{width:28px;height:28px;border:3px solid var(--line);border-top-color:var(--ink);border-radius:50%;animation:s .8s linear infinite;margin:6px 0 14px}
+@keyframes s{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion:reduce){.spin{animation:none}}
+footer{text-align:center;padding:20px;font-size:13px;color:var(--muted)}footer a{color:var(--muted)}
+[hidden]{display:none!important}
+</style>
+</head>
+<body>
+<header><a class="brand" href="/" id="home"><img src="/favicon.svg?v=4" width="24" height="24" alt="" />Nest</a>
+<select id="lang" aria-label="Language"><option value="en">English</option><option value="zh-Hant">繁體中文</option><option value="zh-Hans">简体中文</option></select></header>
+<main><div class="card" id="card" aria-live="polite"><div class="spin" role="status"></div><p class="muted" data-t="loading"></p></div></main>
+<footer><a href="/privacy" id="privacy" data-t="privacy"></a> · <a href="/terms" id="terms" data-t="terms"></a></footer>
+<noscript><p style="text-align:center">Please enable JavaScript to continue. 請啟用 JavaScript。</p></noscript>
+<script>
+(function () {
+  'use strict';
+  var API_KEY = '__NEST_FIREBASE_API_KEY__'; // public Firebase web key, injected at build time (vite.config.js nestPublicConfig)
+  var IT = 'https://identitytoolkit.googleapis.com/v1/';
+  var OK_HOSTS = '__NEST_OK_HOSTS__'.split(','); // site + legacy hosts, injected at build time
+  var T = {
+    en: {
+      loading: 'Checking your link…', privacy: 'Privacy', terms: 'Terms', open: 'Open Nest', cont: 'Continue', home: 'Back to Nest',
+      rpTitle: 'Reset your password', rpFor: 'for', rpNew: 'New password', rpConfirm: 'Confirm new password', rpSave: 'Save new password', rpSaving: 'Saving…',
+      show: 'Show', hide: 'Hide', rpShort: 'Use at least 6 characters.', rpMismatch: 'The two passwords don’t match.', rpWeak: 'This password is too weak. Try a longer one.',
+      rpDone: 'Password changed', rpDoneP: 'You can now sign in with your new password.', signIn: 'Sign in',
+      veTitle: 'Email verified', veP: 'Your email address has been verified. You can go back to Nest.',
+      reTitle: 'Email restored', reP: 'Your sign-in email has been changed back to', reP2: 'If you didn’t ask for the change, reset your password now to keep your account safe.', reReset: 'Send password reset email', reSent: 'Reset email sent. Check your inbox.',
+      ceTitle: 'Email changed', ceP: 'Your sign-in email is now', ceP0: 'Your sign-in email has been changed.',
+      badTitle: 'This link doesn’t work', badExpired: 'The link has expired or has already been used. Request a new one from Nest and try again.', badInvalid: 'The link is invalid or incomplete. Open the newest email from Nest, or request a new link.',
+      badUser: 'This account no longer exists or has been disabled.', badNet: 'Couldn’t reach the server. Check your connection and try again.', retry: 'Try again', badMode: 'Unknown action. Open the newest email from Nest.'
+    },
+    'zh-Hant': {
+      loading: '正在檢查連結…', privacy: '私隱政策', terms: '服務條款', open: '開啟 Nest', cont: '繼續', home: '返回 Nest',
+      rpTitle: '重設密碼', rpFor: '帳戶', rpNew: '新密碼', rpConfirm: '確認新密碼', rpSave: '儲存新密碼', rpSaving: '儲存中…',
+      show: '顯示', hide: '隱藏', rpShort: '密碼最少須有 6 個字元。', rpMismatch: '兩次輸入的密碼不相符。', rpWeak: '密碼太弱，請使用較長的密碼。',
+      rpDone: '密碼已更改', rpDoneP: '你現在可以使用新密碼登入。', signIn: '登入',
+      veTitle: '電郵已驗證', veP: '你的電郵地址已成功驗證，可返回 Nest 繼續使用。',
+      reTitle: '電郵已還原', reP: '你的登入電郵已還原為', reP2: '如更改並非由你提出，請立即重設密碼，以保障帳戶安全。', reReset: '發送重設密碼電郵', reSent: '已發送重設密碼電郵，請查看你的收件匣。',
+      ceTitle: '電郵已更改', ceP: '你的登入電郵現已更改為', ceP0: '你的登入電郵已更改。',
+      badTitle: '此連結無法使用', badExpired: '連結已過期或已被使用。請在 Nest 重新索取連結後再試。', badInvalid: '連結無效或不完整。請開啟 Nest 最新發出的電郵，或重新索取連結。',
+      badUser: '此帳戶已不存在或已被停用。', badNet: '未能連接伺服器，請檢查網絡後再試。', retry: '再試一次', badMode: '未知的操作。請開啟 Nest 最新發出的電郵。'
+    },
+    'zh-Hans': {
+      loading: '正在检查链接…', privacy: '隐私政策', terms: '服务条款', open: '打开 Nest', cont: '继续', home: '返回 Nest',
+      rpTitle: '重设密码', rpFor: '账户', rpNew: '新密码', rpConfirm: '确认新密码', rpSave: '保存新密码', rpSaving: '保存中…',
+      show: '显示', hide: '隐藏', rpShort: '密码至少需要 6 个字符。', rpMismatch: '两次输入的密码不一致。', rpWeak: '密码太弱，请使用更长的密码。',
+      rpDone: '密码已更改', rpDoneP: '你现在可以使用新密码登录。', signIn: '登录',
+      veTitle: '邮箱已验证', veP: '你的邮箱地址已成功验证，可返回 Nest 继续使用。',
+      reTitle: '邮箱已恢复', reP: '你的登录邮箱已恢复为', reP2: '如果更改并非由你发起，请立即重设密码，以保障账户安全。', reReset: '发送重设密码邮件', reSent: '已发送重设密码邮件，请查看你的收件箱。',
+      ceTitle: '邮箱已更改', ceP: '你的登录邮箱现已更改为', ceP0: '你的登录邮箱已更改。',
+      badTitle: '此链接无法使用', badExpired: '链接已过期或已被使用。请在 Nest 重新获取链接后再试。', badInvalid: '链接无效或不完整。请打开 Nest 最新发送的邮件，或重新获取链接。',
+      badUser: '此账户已不存在或已被停用。', badNet: '无法连接服务器，请检查网络后再试。', retry: '再试一次', badMode: '未知操作。请打开 Nest 最新发送的邮件。'
+    }
+  };
+  var q = new URLSearchParams(location.search);
+  var mode = q.get('mode') || '', code = q.get('oobCode') || '';
+  function pickLang() {
+    var cands = [q.get('lang')];
+    try { cands.push(localStorage.getItem('nest.lang')); } catch (e) {}
+    cands = cands.concat(navigator.languages || [navigator.language]);
+    for (var i = 0; i < cands.length; i++) {
+      var l = String(cands[i] || '').toLowerCase();
+      if (!l) continue;
+      if (/^zh-(hans|cn|sg|my)/.test(l)) return 'zh-Hans';
+      if (/^zh/.test(l)) return 'zh-Hant'; // zh, zh-hk, zh-tw, zh-hant
+      if (/^en/.test(l)) return 'en';
+      if (i === 0 || i === 1) return 'en'; // explicit other language → English text
+    }
+    return 'en';
+  }
+  var lang = pickLang();
+  var segOf = { en: 'en', 'zh-Hant': 'zh-hant', 'zh-Hans': 'zh-hans' };
+  function t(k) { return (T[lang] && T[lang][k]) || T.en[k] || k; }
+  function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+  function safeContinue() {
+    var c = q.get('continueUrl');
+    if (!c) return '';
+    try { var u = new URL(c, location.origin); if ((u.protocol === 'https:' && OK_HOSTS.indexOf(u.hostname) >= 0) || u.origin === location.origin) return u.href; } catch (e) {}
+    return '';
+  }
+  var cont = safeContinue();
+  var card = document.getElementById('card');
+  var state = { view: 'loading', data: {} };
+  function chrome() {
+    document.documentElement.lang = lang;
+    document.getElementById('lang').value = lang;
+    var nodes = document.querySelectorAll('[data-t]');
+    for (var i = 0; i < nodes.length; i++) nodes[i].textContent = t(nodes[i].getAttribute('data-t'));
+    document.getElementById('privacy').href = lang === 'en' ? '/privacy' : '/' + segOf[lang] + '/privacy';
+    document.getElementById('terms').href = lang === 'en' ? '/terms' : '/' + segOf[lang] + '/terms';
+  }
+  function actions(primary) {
+    var href = cont || '/app';
+    return '<a class="btn" href="' + esc(primary === 'signin' ? (cont || '/auth') : href) + '" data-testid="action-continue">' + esc(primary === 'signin' ? t('signIn') : (cont ? t('cont') : t('open'))) + '</a>';
+  }
+  function render() {
+    chrome();
+    var v = state.view, d = state.data, h = '';
+    if (v === 'loading') h = '<div class="spin" role="status"></div><p class="muted">' + esc(t('loading')) + '</p>';
+    else if (v === 'reset') {
+      h = '<h1>' + esc(t('rpTitle')) + '</h1>' + (d.email ? '<p class="muted">' + esc(t('rpFor')) + ' <span class="email">' + esc(d.email) + '</span></p>' : '') +
+        '<form id="f" novalidate data-testid="reset-form">' +
+        '<input type="email" name="username" autocomplete="username" value="' + esc(d.email || '') + '" hidden />' +
+        '<label for="p1">' + esc(t('rpNew')) + '</label><div class="pw"><input id="p1" type="password" autocomplete="new-password" minlength="6" required /><button type="button" class="show" data-for="p1">' + esc(t('show')) + '</button></div>' +
+        '<label for="p2">' + esc(t('rpConfirm')) + '</label><div class="pw"><input id="p2" type="password" autocomplete="new-password" minlength="6" required /><button type="button" class="show" data-for="p2">' + esc(t('show')) + '</button></div>' +
+        (d.err ? '<div class="err" role="alert" data-testid="action-error">' + esc(t(d.err)) + '</div>' : '') +
+        '<button class="btn" type="submit" id="save"' + (d.busy ? ' disabled' : '') + '>' + esc(d.busy ? t('rpSaving') : t('rpSave')) + '</button></form>';
+    } else if (v === 'resetDone') h = '<div class="icon solid">✓</div><h1 data-testid="action-title">' + esc(t('rpDone')) + '</h1><p>' + esc(t('rpDoneP')) + '</p>' + actions('signin');
+    else if (v === 'verified') h = '<div class="icon solid">✓</div><h1 data-testid="action-title">' + esc(t('veTitle')) + '</h1><p>' + esc(t('veP')) + '</p>' + actions();
+    else if (v === 'changed') h = '<div class="icon solid">✓</div><h1 data-testid="action-title">' + esc(t('ceTitle')) + '</h1><p>' + (d.email ? esc(t('ceP')) + ' <span class="email">' + esc(d.email) + '</span>' : esc(t('ceP0'))) + '</p>' + actions('signin');
+    else if (v === 'recovered') h = '<div class="icon solid">✓</div><h1 data-testid="action-title">' + esc(t('reTitle')) + '</h1><p>' + esc(t('reP')) + ' <span class="email">' + esc(d.email || '') + '</span></p><p>' + esc(t('reP2')) + '</p>' +
+        (d.sent ? '<div class="err" role="status">' + esc(t('reSent')) + '</div>' : '<button class="btn" type="button" id="sendReset"' + (d.busy || !d.email ? ' disabled' : '') + '>' + esc(t('reReset')) + '</button>') +
+        '<a class="btn ghost" href="' + esc(cont || '/auth') + '">' + esc(t('signIn')) + '</a>';
+    else if (v === 'error') h = '<div class="icon">!</div><h1 data-testid="action-title">' + esc(t('badTitle')) + '</h1><p data-testid="action-error">' + esc(t(d.key || 'badInvalid')) + '</p>' +
+        (d.key === 'badNet' ? '<button class="btn" type="button" id="retry">' + esc(t('retry')) + '</button><a class="btn ghost" href="/app">' + esc(t('home')) + '</a>' : '<a class="btn" href="' + esc(cont || '/app') + '">' + esc(t('home')) + '</a>');
+    card.innerHTML = h;
+    card.setAttribute('data-view', v);
+    bind();
+  }
+  function bind() {
+    var shows = card.querySelectorAll('.show');
+    for (var i = 0; i < shows.length; i++) shows[i].onclick = function () { var inp = document.getElementById(this.getAttribute('data-for')); var on = inp.type === 'password'; inp.type = on ? 'text' : 'password'; this.textContent = on ? t('hide') : t('show'); };
+    var f = document.getElementById('f');
+    if (f) f.onsubmit = function (e) {
+      e.preventDefault();
+      var a = document.getElementById('p1').value, b = document.getElementById('p2').value;
+      if (a.length < 6) return setErr('rpShort');
+      if (a !== b) return setErr('rpMismatch');
+      state.data.busy = true; state.data.err = ''; keepRender(a, b);
+      call('accounts:resetPassword', { oobCode: code, newPassword: a }).then(function () { state.view = 'resetDone'; state.data = {}; render(); })
+        .catch(function (er) { state.data.busy = false; var k = errKey(er); if (k === 'rpWeak') { state.data.err = k; keepRender(a, b); } else { state.view = 'error'; state.data = { key: k }; render(); } });
+    };
+    var sr = document.getElementById('sendReset');
+    if (sr) sr.onclick = function () {
+      state.data.busy = true; render();
+      call('accounts:sendOobCode', { requestType: 'PASSWORD_RESET', email: state.data.email }).then(function () { state.data.sent = true; state.data.busy = false; render(); })
+        .catch(function () { state.data.busy = false; render(); });
+    };
+    var rt = document.getElementById('retry');
+    if (rt) rt.onclick = start;
+  }
+  function keepRender(a, b) { render(); var p1 = document.getElementById('p1'), p2 = document.getElementById('p2'); if (p1) { p1.value = a || ''; p2.value = b || ''; } }
+  function setErr(k) { var a = document.getElementById('p1').value, b = document.getElementById('p2').value; state.data.err = k; keepRender(a, b); }
+  function call(path, body) {
+    return fetch(IT + path + '?key=' + API_KEY, { method: 'POST', headers: { 'content-type': 'application/json', 'X-Firebase-Locale': lang }, body: JSON.stringify(body), referrerPolicy: 'no-referrer' })
+      .then(function (r) { return r.json().catch(function () { return {}; }).then(function (j) { if (!r.ok) { var m = (j && j.error && j.error.message) || 'HTTP_' + r.status; throw new Error(m); } return j; }); },
+        function () { throw new Error('NETWORK'); });
+  }
+  function errKey(er) {
+    var m = String((er && er.message) || '');
+    if (m === 'NETWORK') return 'badNet';
+    if (/EXPIRED_OOB_CODE/.test(m)) return 'badExpired';
+    if (/INVALID_OOB_CODE/.test(m)) return 'badExpired'; // Firebase uses this for already-used codes too
+    if (/WEAK_PASSWORD/.test(m)) return 'rpWeak';
+    if (/USER_DISABLED|USER_NOT_FOUND|EMAIL_NOT_FOUND/.test(m)) return 'badUser';
+    return 'badInvalid';
+  }
+  function fail(er) { state.view = 'error'; state.data = { key: errKey(er) }; render(); }
+  function start() {
+    state.view = 'loading'; state.data = {}; render();
+    if (!code || !mode) { state.view = 'error'; state.data = { key: 'badInvalid' }; return render(); }
+    if (mode === 'resetPassword') {
+      // verifyPasswordResetCode: check the code, it must be a PASSWORD_RESET code
+      call('accounts:resetPassword', { oobCode: code }).then(function (j) {
+        if (j.requestType && j.requestType !== 'PASSWORD_RESET') throw new Error('INVALID_OOB_CODE');
+        state.view = 'reset'; state.data = { email: j.email || '' }; render();
+        var p = document.getElementById('p1'); if (p) p.focus();
+      }).catch(fail);
+    } else if (mode === 'verifyEmail') {
+      call('accounts:update', { oobCode: code }).then(function () { state.view = 'verified'; render(); }).catch(fail);
+    } else if (mode === 'recoverEmail') {
+      // checkActionCode → restored email, then applyActionCode
+      call('accounts:resetPassword', { oobCode: code }).then(function (j) {
+        var email = j.email || '';
+        return call('accounts:update', { oobCode: code }).then(function () { state.view = 'recovered'; state.data = { email: email }; render(); });
+      }).catch(fail);
+    } else if (mode === 'verifyAndChangeEmail') {
+      call('accounts:resetPassword', { oobCode: code }).then(function (j) {
+        var email = j.newEmail || j.email || '';
+        return call('accounts:update', { oobCode: code }).then(function () { state.view = 'changed'; state.data = { email: email }; render(); });
+      }).catch(fail);
+    } else { state.view = 'error'; state.data = { key: 'badMode' }; render(); }
+  }
+  document.getElementById('lang').onchange = function () {
+    lang = this.value; try { localStorage.setItem('nest.lang', lang); } catch (e) {}
+    var a = document.getElementById('p1'), b = document.getElementById('p2');
+    var va = a ? a.value : '', vb = b ? b.value : '';
+    render(); var a2 = document.getElementById('p1'); if (a2) { a2.value = va; document.getElementById('p2').value = vb; }
+  };
+  start();
+})();
+</script>
+</body>
+</html>
