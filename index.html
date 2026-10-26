@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#0a0a0a" media="(prefers-color-scheme: dark)" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-title" content="Nest" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="application-name" content="Nest" />
+    <title>Nest — Your family's AI home</title>
+    <meta name="description" content="Nest is the AI helper for families everywhere: homework tutor, revision quizzes, family memory and reminders in one place, with local info for your country or region." />
+    <link rel="canonical" href="https://nesty.cyou/" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Nest" />
+    <meta property="og:locale" content="en_US" />
+    <meta property="og:url" content="https://nesty.cyou/" />
+    <meta property="og:title" content="Nest — Your family's AI home" />
+    <meta property="og:description" content="The AI helper for families: homework tutor, revision quizzes, shared memory and reminders in one place." />
+    <meta property="og:image" content="https://nesty.cyou/og-v2.png" />
+    <meta property="og:image:secure_url" content="https://nesty.cyou/og-v2.png" />
+    <meta property="og:image:type" content="image/png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Nest — Your family's AI home. nesty.cyou" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Nest — Your family's AI home" />
+    <meta name="twitter:description" content="The AI helper for families: homework tutor, revision quizzes, shared memory and reminders in one place." />
+    <meta name="twitter:image" content="https://nesty.cyou/og-v2.png" />
+    <meta name="twitter:image:alt" content="Nest — Your family's AI home. nesty.cyou" />
+    <link rel="icon" href="/favicon.svg?v=4" type="image/svg+xml" />
+    <link rel="icon" href="/favicon-32.png?v=4" sizes="32x32" type="image/png" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png?v=4" sizes="180x180" />
+    <link rel="apple-touch-icon-precomposed" href="/apple-touch-icon.png?v=4" />
+    <link rel="manifest" href="/manifest.webmanifest?v=4" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet" media="print" onload="this.media='all'" />
+  </head>
+  <body>
+    <div id="root"></div>
+    <script>
+      // Boot watchdog (2026-10-18): if the app has not rendered after 9 s (stuck service worker / failed bundle),
+      // drop the service worker + caches once per session and reload; otherwise show a reload link instead of a blank page.
+      setTimeout(function () {
+        var r = document.getElementById('root'); if (!r) return;
+        // The root page ships static landing content in #root (id="seo"); only a child React rendered counts as booted.
+        for (var c = r.firstElementChild; c; c = c.nextElementSibling) if (c.id !== 'seo') return;
+        var k = 'nest.bootRescue', last = 0; try { last = +sessionStorage.getItem(k) || 0; } catch (e) {}
+        if (Date.now() - last > 60000) {
+          try { sessionStorage.setItem(k, String(Date.now())); } catch (e) {}
+          var done = function () { location.reload(); };
+          var jobs = [];
+          if (navigator.serviceWorker && navigator.serviceWorker.getRegistrations) jobs.push(navigator.serviceWorker.getRegistrations().then(function (l) { return Promise.all(l.map(function (x) { return x.unregister(); })); }));
+          if (window.caches && caches.keys) jobs.push(caches.keys().then(function (l) { return Promise.all(l.map(function (x) { return caches.delete(x); })); }));
+          Promise.all(jobs).then(done, done); return;
+        }
+        r.innerHTML = '<div style="min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;font:600 16px system-ui,sans-serif;color:#111"><b>Nest 載入時間較長 · Nest is taking a while</b><a href="" onclick="location.reload();return false" style="color:#111">重新載入 · Reload</a></div>';
+      }, 9000);
+    </script>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>
