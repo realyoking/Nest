@@ -1,0 +1,171 @@
+{
+ "base": {
+  "manifest": {
+   "id": "pomo-tab",
+   "name": "Pomodoro",
+   "nameZh": "番茄鐘",
+   "version": "1.0.0",
+   "category": "study",
+   "capabilities": [
+    "tab"
+   ],
+   "permissions": [],
+   "tab": {
+    "title": "Pomodoro",
+    "titleZh": "番茄鐘",
+    "icon": "clock"
+   }
+  },
+  "html": "<div class=\"pomo\">\n  <div id=\"time\">25:00</div>\n  <button id=\"start\">開始</button>\n  <button id=\"reset\">重設</button>\n</div>",
+  "css": ".pomo { text-align: center; }\n#time { font-size: 48px; font-weight: 900; }\nbutton { border-radius: 14px; }",
+  "js": "const el = document.getElementById('time');\nlet left = 1500;\nfunction show() {\n  el.textContent = String(Math.floor(left / 60)).padStart(2, '0') + ':' + String(left % 60).padStart(2, '0');\n}\ndocument.getElementById('start').onclick = () => {};\ndocument.getElementById('reset').onclick = () => { left = 1500; show(); };"
+ },
+ "cases": [
+  {
+   "name": "fenced JSON with prose around it, raw newlines inside strings",
+   "expect": {
+    "kind": "full",
+    "has": {
+     "html": "id=\"count\""
+    }
+   },
+   "text": "好的，以下是更新後的插件：\n```json\n{\"manifest\": {\"id\":\"pomo-tab\",\"name\":\"Pomodoro\",\"nameZh\":\"番茄鐘\",\"version\":\"1.0.1\",\"category\":\"study\",\"capabilities\":[\"tab\"],\"permissions\":[],\"tab\":{\"title\":\"Pomodoro\",\"titleZh\":\"番茄鐘\",\"icon\":\"clock\"}},\n\"html\": \"<div class=\\\"pomo\\\">\n  <div id=\\\"time\\\">25:00</div>\n  <p id=\\\"count\\\">0</p>\n</div>\",\n\"css\": \".pomo { text-align: center; }\",\n\"js\": \"let done = 0;\nfunction add() {\n\tdone++;\n}\",\n\"notes\": \"加入完成次數。\"}\n```\n希望有幫助！"
+  },
+  {
+   "name": "invalid escapes (\\' and \\`) + trailing commas",
+   "expect": {
+    "kind": "full",
+    "has": {
+     "js": "getElementById('count')"
+    }
+   },
+   "text": "{\"manifest\": {\"id\":\"pomo-tab\",\"name\":\"Pomodoro\",\"nameZh\":\"番茄鐘\",\"version\":\"1.0.1\",\"category\":\"study\",\"capabilities\":[\"tab\"],\"permissions\":[],\"tab\":{\"title\":\"Pomodoro\",\"titleZh\":\"番茄鐘\",\"icon\":\"clock\"}}, \"html\": \"<p id=\\\"count\\\">0</p>\", \"css\": \"\", \"js\": \"const c = document.getElementById(\\'count\\'); c.textContent = \\`${1}\\`;\", \"notes\": \"ok\",}"
+  },
+  {
+   "name": "unescaped double quotes in html attributes",
+   "expect": {
+    "kind": "full",
+    "has": {
+     "html": "<div class=\"pomo\">"
+    }
+   },
+   "text": "{\"manifest\": {\"id\":\"pomo-tab\",\"name\":\"Pomodoro\",\"nameZh\":\"番茄鐘\",\"version\":\"1.0.1\",\"category\":\"study\",\"capabilities\":[\"tab\"],\"permissions\":[],\"tab\":{\"title\":\"Pomodoro\",\"titleZh\":\"番茄鐘\",\"icon\":\"clock\"}}, \"html\": \"<div class=\"pomo\"><p id=\"count\">0</p></div>\", \"css\": \"\", \"js\": \"\", \"notes\": \"加入計數\"}"
+  },
+  {
+   "name": "full JSON cut off mid js (max tokens / dropped stream)",
+   "expect": {
+    "problem": "truncated"
+   },
+   "text": "{\"manifest\":{\"id\":\"pomo-tab\",\"name\":\"Pomodoro\",\"nameZh\":\"番茄鐘\",\"version\":\"1.0.1\",\"category\":\"study\",\"capabilities\":[\"tab\"],\"permissions\":[],\"tab\":{\"title\":\"Pomodoro\",\"titleZh\":\"番茄鐘\",\"icon\":\"clock\"}},\"html\":\"<div class=\\\"pomo\\\">\\n  <div id=\\\"time\\\">25:00</div>\\n  <button id=\\\"start\\\">開始</button>\\n  <button id=\\\"reset\\\">重設</button>\\n</div>\",\"css\":\".pomo { text-align: center; }\\n#time { font-size: 48px; font-weight: 900; }\\nbutton { border-radius: 14px; }\",\"js\":\"const el = document.getElementById('time');\\nlet left "
+  },
+  {
+   "name": "separate ```html / ```css / ```javascript fences, no JSON",
+   "expect": {
+    "kind": "files",
+    "has": {
+     "css": "background: #000",
+     "js": "done++"
+    }
+   },
+   "text": "我把按鈕改成黑色並加入計數：\n\n```html\n<div class=\"pomo\"><p id=\"count\">0</p></div>\n```\n\n```css\nbutton { background: #000; color: #fff; }\n```\n\n```javascript\nlet done = 0; function add() { done++; }\n```"
+  },
+  {
+   "name": "manifest JSON fence + code fences",
+   "expect": {
+    "kind": "files",
+    "version": "1.0.1",
+    "has": {
+     "html": "count"
+    }
+   },
+   "text": "```json\n{\"manifest\":{\"id\":\"pomo-tab\",\"name\":\"Pomodoro\",\"nameZh\":\"番茄鐘\",\"version\":\"1.0.1\",\"category\":\"study\",\"capabilities\":[\"tab\"],\"permissions\":[],\"tab\":{\"title\":\"Pomodoro\",\"titleZh\":\"番茄鐘\",\"icon\":\"clock\"}},\"notes\":\"加入計數\"}\n```\n```html\n<p id=\"count\">0</p>\n```\n```js\nlet done = 0;\n```"
+  },
+  {
+   "name": "SEARCH/REPLACE blocks with file names",
+   "expect": {
+    "kind": "edits",
+    "has": {
+     "css": "background: #1d4ed8",
+     "js": "done++"
+    }
+   },
+   "text": "File: css\n<<<<<<< SEARCH\nbutton { border-radius: 14px; }\n=======\nbutton { border-radius: 14px; background: #1d4ed8; }\n>>>>>>> REPLACE\n\nFile: js\n<<<<<<< SEARCH\nlet left = 1500;\n=======\nlet left = 1500;\nlet done = 0; function add() { done++; }\n>>>>>>> REPLACE"
+  },
+  {
+   "name": "edits with alias file/key names (javascript, search/replacement, old/new)",
+   "expect": {
+    "kind": "edits",
+    "has": {
+     "js": "let left = 1200;",
+     "css": "font-size: 56px"
+    }
+   },
+   "text": "{\"changes\":[{\"file\":\"javascript\",\"search\":\"let left = 1500;\",\"replacement\":\"let left = 1200;\"},{\"path\":\"style.css\",\"old\":\"font-size: 48px\",\"new\":\"font-size: 56px\"}],\"notes\":\"改成 20 分鐘\"}"
+  },
+  {
+   "name": "edit \"find\" with different indentation and CRLF",
+   "expect": {
+    "kind": "edits",
+    "has": {
+     "js": "el.textContent = \"x\";"
+    }
+   },
+   "text": "{\"edits\":[{\"file\":\"js\",\"find\":\"function show() {\\r\\n    el.textContent = String(Math.floor(left / 60)).padStart(2, '0') + ':' + String(left % 60).padStart(2, '0');\\r\\n}\",\"replace\":\"function show() { el.textContent = \\\"x\\\"; }\"}],\"notes\":\"x\"}"
+  },
+  {
+   "name": "refusal / plain prose",
+   "expect": {
+    "problem": "prose"
+   },
+   "text": "抱歉，我無法協助這個要求。"
+  },
+  {
+   "name": "empty reply",
+   "expect": {
+    "problem": "empty"
+   },
+   "text": "   "
+  },
+  {
+   "name": "edits array cut off",
+   "expect": {
+    "problem": "truncated"
+   },
+   "text": "{\"edits\":[{\"file\":\"css\",\"find\":\"button { border-radius: 14px; }\",\"replace\":\"button { border-radius: 20px; }\"},{\"file\":\"js\",\"find\":\"let left = 15"
+  },
+  {
+   "name": "smart quotes as JSON delimiters",
+   "expect": {
+    "kind": "edits",
+    "has": {
+     "css": "border-radius: 20px"
+    }
+   },
+   "text": "{“edits”: [{“file”: “css”, “find”: “border-radius: 14px”, “replace”: “border-radius: 20px”}], “notes”: “圓角”}"
+  },
+  {
+   "name": "// comments inside the JSON",
+   "expect": {
+    "kind": "edits",
+    "has": {
+     "css": "font-size: 60px"
+    }
+   },
+   "text": "{\n  // make the clock bigger\n  \"edits\": [{\"file\": \"css\", \"find\": \"font-size: 48px\", \"replace\": \"font-size: 60px\"}], /* done */\n  \"notes\": \"大一點\"\n}"
+  },
+  {
+   "name": "JSON object without manifest or edits",
+   "expect": {
+    "problem": "no_manifest"
+   },
+   "text": "{\"notes\": \"我已經更新了插件\", \"status\": \"ok\"}"
+  },
+  {
+   "name": "edits whose find text is not in the files",
+   "expect": {
+    "error": "edit_failed"
+   },
+   "text": "{\"edits\":[{\"file\":\"js\",\"find\":\"setInterval(tick, 1000)\",\"replace\":\"setInterval(tick, 500)\"}],\"notes\":\"x\"}"
+  }
+ ]
+}
