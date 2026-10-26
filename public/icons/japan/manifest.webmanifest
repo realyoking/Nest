@@ -1,0 +1,74 @@
+{
+ "id": "/app",
+ "name": "Nest 巢",
+ "short_name": "Nest",
+ "description": "全家人的 AI 助理 · The AI helper for your family",
+ "lang": "zh-Hant",
+ "dir": "ltr",
+ "start_url": "/app?source=pwa",
+ "scope": "/",
+ "display": "standalone",
+ "orientation": "any",
+ "background_color": "#0b0b0d",
+ "theme_color": "#ffffff",
+ "categories": [
+  "education",
+  "productivity",
+  "lifestyle"
+ ],
+ "icons": [
+  {
+   "src": "/icons/japan/icon-192.png",
+   "sizes": "192x192",
+   "type": "image/png",
+   "purpose": "any"
+  },
+  {
+   "src": "/icons/japan/icon-512.png",
+   "sizes": "512x512",
+   "type": "image/png",
+   "purpose": "any"
+  },
+  {
+   "src": "/icons/japan/maskable-192.png",
+   "sizes": "192x192",
+   "type": "image/png",
+   "purpose": "maskable"
+  },
+  {
+   "src": "/icons/japan/maskable-512.png",
+   "sizes": "512x512",
+   "type": "image/png",
+   "purpose": "maskable"
+  },
+  {
+   "src": "/icons/japan/apple-180.png",
+   "sizes": "180x180",
+   "type": "image/png"
+  }
+ ],
+ "shortcuts": [
+  {
+   "name": "AI 助理",
+   "short_name": "AI",
+   "url": "/app/agent",
+   "icons": [
+    {
+     "src": "/icons/japan/icon-192.png",
+     "sizes": "192x192"
+    }
+   ]
+  },
+  {
+   "name": "提醒",
+   "short_name": "提醒",
+   "url": "/app/reminders",
+   "icons": [
+    {
+     "src": "/icons/japan/icon-192.png",
+     "sizes": "192x192"
+    }
+   ]
+  }
+ ]
+}
