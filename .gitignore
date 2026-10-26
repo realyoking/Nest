@@ -1,0 +1,11 @@
+node_modules/
+dist/
+dist-mock/
+.env
+.env.*
+!.env.example
+.vercel/
+*.pem
+*service-account*.json
+shots/
+*.log
