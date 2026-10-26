@@ -1,0 +1,74 @@
+/* Run 22: seasonal decor (lazy CSS chunk). transform / opacity animations only; none under reduced motion. */
+.sz { position: absolute; inset: 0; pointer-events: none; } /* no z-index: children join the hero's stacking order */
+.sz-bats, .sz-fall, .sz-rl, .sz-pls { z-index: 2; }
+.sz .sr-only, .sz-badge .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+/* ---------- Halloween ---------- */
+.sz-bats { position: absolute; inset: 0 0 45% 0; }
+.sz-bat { position: absolute; display: block; aspect-ratio: 2 / 1; animation: szBatFly 12s ease-in-out infinite; will-change: transform; }
+.sz-bat svg { display: block; width: 100%; height: 100%; fill: #1b1426; filter: drop-shadow(0 4px 6px rgba(20,30,70,.18)); transform-origin: 50% 40%; animation: szFlap .32s ease-in-out infinite alternate; }
+html[data-lpt='dark'] .sz-bat svg { fill: #07060c; filter: drop-shadow(0 0 5px rgba(170,190,255,.42)); }
+@keyframes szFlap { from { transform: scaleY(1); } to { transform: scaleY(.42) translateY(4px); } }
+@keyframes szBatFly { 0%, 100% { transform: translate(0, 0) rotate(-4deg); } 25% { transform: translate(26px, -14px) rotate(3deg); } 50% { transform: translate(52px, 4px) rotate(-2deg); } 75% { transform: translate(18px, 12px) rotate(4deg); } }
+.sz-ground { position: absolute; inset: 0; pointer-events: none; z-index: 6; }
+.sz-pumpkins { position: absolute; left: -206px; top: 118px; width: 240px; aspect-ratio: 480 / 260; filter: drop-shadow(0 10px 12px rgba(30,50,20,.28)); }
+.sz-pumpkins picture, .sz-pumpkins img { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.sz-pumpkins .sz-n { opacity: 0; transition: opacity .9s ease .4s; }
+html[data-lpt='dark'] .sz-pumpkins .sz-n { opacity: 1; }
+html[data-lpt='dark'] .sz-pumpkins { filter: drop-shadow(0 0 22px rgba(255,150,40,.38)); }
+
+/* bats replace the butterflies for Halloween */
+.hz-season-halloween .hz-bfs { display: none; }
+
+/* ---------- Christmas: snow ---------- */
+.sz-fall { position: absolute; inset: 0; overflow: hidden; }
+.sz-fall > span { position: absolute; top: 0; bottom: 0; width: 12px; animation: szFall 14s linear infinite; will-change: transform; }
+.sz-fall > span > i { display: block; border-radius: 50%; background: #fff; box-shadow: 0 0 8px 1px rgba(255,255,255,.75); }
+@keyframes szFall { from { transform: translate(0, -6%); } 50% { transform: translate(var(--sway, 20px), 46%); } to { transform: translate(0, 100%); } }
+.sz-snow > span > i { margin-top: -10px; }
+html:not([data-lpt='dark']) .sz-snow > span > i { box-shadow: 0 0 3px rgba(70,120,200,.45); }
+
+/* ---------- Lunar New Year: red lanterns + plum petals ---------- */
+.sz-rl { position: absolute; top: 56px; width: clamp(56px, 6vw, 84px); aspect-ratio: 80 / 150; transform-origin: 50% 0; animation: szSwing 4.8s ease-in-out infinite; filter: drop-shadow(0 10px 18px rgba(140,10,10,.25)); }
+.sz-rl svg { display: block; width: 100%; height: 100%; }
+.sz-rl-l { left: 1.5%; }
+.sz-rl-r { right: 1.5%; animation-delay: -2.4s; }
+html[data-lpt='dark'] .sz-rl { filter: drop-shadow(0 0 22px rgba(255,70,40,.5)); }
+@keyframes szSwing { 0%, 100% { transform: rotate(-3.5deg); } 50% { transform: rotate(3.5deg); } }
+.sz-petal > span > i { border-radius: 70% 0 70% 0; background: #ffb7c9; box-shadow: none; transform: rotate(35deg); }
+
+/* ---------- Mid-Autumn: floating paper lanterns ---------- */
+.sz-pl { position: absolute; display: block; min-width: 30px; aspect-ratio: 40 / 52; animation: szFloat 9s ease-in-out infinite; filter: drop-shadow(0 0 14px rgba(255,170,60,.45)); }
+.sz-pl svg { display: block; width: 100%; height: 100%; }
+html[data-lpt='dark'] .sz-pl { filter: drop-shadow(0 0 26px rgba(255,170,60,.75)); }
+@keyframes szFloat { 0%, 100% { transform: translate(0, 0); } 50% { transform: translate(6px, -16px); } }
+
+/* ---------- phones / tablets ---------- */
+@media (max-width: 900px) {
+  .sz-bat1, .sz-bat3, .sz-bat4 { display: none; }
+  .sz-bat0 { top: 27% !important; left: 5% !important; } .sz-bat2 { top: 31% !important; left: 86% !important; }
+  .sz-pumpkins { left: -84px; top: 236px; width: 190px; }
+}
+@media (max-width: 640px) {
+  .sz-pumpkins { width: 124px; left: -74px; top: 196px; }
+  /* phones: the headline fills the width, so the bats fly over the hills beside the phone instead */
+  .sz-bats { inset: 0; }
+  .sz-bat0 { left: 3% !important; top: 545px !important; width: 40px !important; }
+  .sz-bat2 { left: 81% !important; top: 600px !important; width: 34px !important; }
+  .sz-rl { top: 70px; width: 46px; }
+  .sz-rl-l { left: 3%; } .sz-rl-r { right: 3%; }
+  .sz-pl1, .sz-pl3 { display: none; }
+}
+
+/* ---------- in-app accents (monochrome, follows the app theme) ---------- */
+.sz-badge { display: inline-grid; place-items: center; width: 26px; height: 26px; border-radius: 999px; color: var(--ink-2); background: var(--soft); flex: none; margin-left: 6px; vertical-align: middle; }
+.sz-chip { display: inline-flex; align-items: center; gap: 6px; height: 28px; padding: 0 11px 0 9px; border-radius: 999px; background: var(--soft); color: var(--ink-2); font-weight: 800; font-size: 13px; margin: 2px 0 10px; }
+.sz-chip svg { flex: none; }
+.sz-badge svg, .sz-chip svg { animation: szWiggle 2.6s ease-in-out 1 .6s; transform-origin: 50% 60%; }
+@keyframes szWiggle { 0%, 100% { transform: none; } 20% { transform: rotate(-12deg); } 40% { transform: rotate(9deg); } 60% { transform: rotate(-5deg); } 80% { transform: rotate(2deg); } }
+
+@media (prefers-reduced-motion: reduce) {
+  .sz-bat, .sz-bat svg, .sz-fall > span, .sz-rl, .sz-pl, .sz-badge svg, .sz-chip svg { animation: none !important; }
+  /* still show a little static snow / petals instead of none */
+  .sz-fall > span { transform: translateY(var(--y, 40%)); }
+}
