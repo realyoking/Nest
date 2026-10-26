@@ -24,7 +24,7 @@ const IDT = 'https://identitytoolkit.googleapis.com/v1';
 // Referer sent with Identity Toolkit calls (for API keys restricted by HTTP referrer).
 const ORIGIN = process.env.NEST_API_REFERER || (IS_UPSTREAM ? 'https://heynest.vercel.app' : SITE);
 const JWKS = createRemoteJWKSet(new URL('https://www.googleapis.com/service_accounts/v1/jwk/securetoken@system.gserviceaccount.com'));
-// Admin allowlist: NEST_ADMIN_EMAILS (server) or VITE_ADMIN_EMAILS, comma-separated verified emails. Empty = no email admins.
+// Admin allowlist: NEST_ADMIN_EMAILS (server-only env), comma-separated verified emails. Empty = no email admins.
 export const ADMIN_EMAILS = adminEmails();
 export const PROMO_MAX = 10;
 export const LEDGER_EMAILS = { ledger: 'nest-ledger@system.heynest.invalid', index: 'nest-index@system.heynest.invalid', config: 'nest-config@system.heynest.invalid', media: 'nest-media@system.heynest.invalid' };
